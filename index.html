@@ -27,8 +27,21 @@
   <div id="counter">Chatarra: 0</div>
 
   <script>
-    // Recuperar la cantidad de chatarra almacenada en LocalStorage (si existe)
-    let scrapCount = localStorage.getItem("scrapCount") ? parseInt(localStorage.getItem("scrapCount")) : 0;
+    // Función para obtener la cookie por nombre
+    function getCookie(name) {
+      let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      return match ? match[2] : null;
+    }
+
+    // Función para establecer una cookie
+    function setCookie(name, value, days) {
+      let date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); // Expiración de la cookie
+      document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
+    }
+
+    // Recuperar la cantidad de chatarra almacenada en las cookies (si existe)
+    let scrapCount = getCookie("scrapCount") ? parseInt(getCookie("scrapCount")) : 0;
 
     // Mostrar la cantidad de chatarra al cargar la página
     document.getElementById("counter").textContent = `Chatarra: ${scrapCount}`;
@@ -37,8 +50,8 @@
       scrapCount++; // Incrementar el contador
       document.getElementById("counter").textContent = `Chatarra: ${scrapCount}`; // Actualizar la interfaz
 
-      // Almacenar la cantidad de chatarra en LocalStorage
-      localStorage.setItem("scrapCount", scrapCount);
+      // Almacenar la cantidad de chatarra en la cookie
+      setCookie("scrapCount", scrapCount, 365); // Guarda la cookie por 365 días
     });
   </script>
 </body>
