@@ -27,14 +27,19 @@
   <div id="counter">Chatarra: 0</div>
 
   <script>
-    let scrapCount = 0;
+    // Recuperar la cantidad de chatarra almacenada en LocalStorage (si existe)
+    let scrapCount = localStorage.getItem("scrapCount") ? parseInt(localStorage.getItem("scrapCount")) : 0;
+
+    // Mostrar la cantidad de chatarra al cargar la página
+    document.getElementById("counter").textContent = `Chatarra: ${scrapCount}`;
 
     document.getElementById("scrapButton").addEventListener("click", function() {
-      scrapCount++;
-      document.getElementById("counter").textContent = `Chatarra: ${scrapCount}`;
+      scrapCount++; // Incrementar el contador
+      document.getElementById("counter").textContent = `Chatarra: ${scrapCount}`; // Actualizar la interfaz
+
+      // Almacenar la cantidad de chatarra en LocalStorage
+      localStorage.setItem("scrapCount", scrapCount);
     });
   </script>
 </body>
 </html>
-
-
