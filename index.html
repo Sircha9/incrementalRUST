@@ -19,39 +19,90 @@
       margin-top: 20px;
       font-size: 24px;
     }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .upgrade {
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
   <h1>Juego Incremental - Chatarra</h1>
-  <img id="scrapButton" src="https://i.imgur.com/GOcbWHc.png">
+  <img id="scrapButton" src="https://i.imgur.com/GOcbWHc.png" alt="Botón de chatarra">
   <div id="counter">Chatarra: 0</div>
+  <button id="resetButton">Reiniciar Progreso</button>
+
+  <div class="upgrade">
+    <h2>Mejoras</h2>
+    <button id="buyStoneAxe">Comprar Hacha de Piedra (Costo: 50 Chatarra)</button>
+    <div id="stoneAxeStatus">Hacha de Piedra: No comprada</div>
+  </div>
 
   <script>
-    // Función para obtener la cookie por nombre
-    function getCookie(name) {
-      let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-      return match ? match[2] : null;
+    // Recuperar datos almacenados o inicializar en 0
+    let scrapCount = parseInt(localStorage.getItem("scrapCount")) || 0;
+    let hasStoneAxe = JSON.parse(localStorage.getItem("hasStoneAxe")) || false;
+
+    // Actualizar la interfaz con el progreso actual
+    const counterElement = document.getElementById("counter");
+    const stoneAxeStatus = document.getElementById("stoneAxeStatus");
+    counterElement.textContent = `Chatarra: ${scrapCount}`;
+    stoneAxeStatus.textContent = hasStoneAxe ? "Hacha de Piedra: Comprada" : "Hacha de Piedra: No comprada";
+
+    // Incrementar chatarra al hacer clic en el botón
+    document.getElementById("scrapButton").addEventListener("click", () => {
+      scrapCount++;
+      counterElement.textContent = `Chatarra: ${scrapCount}`;
+      localStorage.setItem("scrapCount", scrapCount); // Guardar progreso
+    });
+
+    // Incrementar chatarra automáticamente si se tiene el hacha de piedra
+    if (hasStoneAxe) {
+      setInterval(() => {
+        scrapCount++;
+        counterElement.textContent = `Chatarra: ${scrapCount}`;
+        localStorage.setItem("scrapCount", scrapCount);
+      }, 1000); // 1 scrap por segundo
     }
 
-    // Función para establecer una cookie
-    function setCookie(name, value, days) {
-      let date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); // Expiración de la cookie
-      document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
-    }
+    // Comprar Hacha de Piedra
+    document.getElementById("buyStoneAxe").addEventListener("click", () => {
+      if (scrapCount >= 50 && !hasStoneAxe) {
+        scrapCount -= 50;
+        hasStoneAxe = true;
+        counterElement.textContent = `Chatarra: ${scrapCount}`;
+        stoneAxeStatus.textContent = "Hacha de Piedra: Comprada";
+        localStorage.setItem("scrapCount", scrapCount);
+        localStorage.setItem("hasStoneAxe", true);
 
-    // Recuperar la cantidad de chatarra almacenada en las cookies (si existe)
-    let scrapCount = getCookie("scrapCount") ? parseInt(getCookie("scrapCount")) : 0;
+        // Comenzar a generar scrap automáticamente
+        setInterval(() => {
+          scrapCount++;
+          counterElement.textContent = `Chatarra: ${scrapCount}`;
+          localStorage.setItem("scrapCount", scrapCount);
+        }, 1000);
+      }
+    });
 
-    // Mostrar la cantidad de chatarra al cargar la página
-    document.getElementById("counter").textContent = `Chatarra: ${scrapCount}`;
-
-    document.getElementById("scrapButton").addEventListener("click", function() {
-      scrapCount++; // Incrementar el contador
-      document.getElementById("counter").textContent = `Chatarra: ${scrapCount}`; // Actualizar la interfaz
-
-      // Almacenar la cantidad de chatarra en la cookie
-      setCookie("scrapCount", scrapCount, 365); // Guarda la cookie por 365 días
+    // Reiniciar progreso al hacer clic en el botón de reinicio
+    document.getElementById("resetButton").addEventListener("click", () => {
+      scrapCount = 0;
+      hasStoneAxe = false;
+      counterElement.textContent = `Chatarra: ${scrapCount}`;
+      stoneAxeStatus.textContent = "Hacha de Piedra: No comprada";
+      localStorage.setItem("scrapCount", scrapCount);
+      localStorage.setItem("hasStoneAxe", false);
     });
   </script>
 </body>
